@@ -55,3 +55,9 @@ docs/_build/
 
 # PyBuilder
 target/
+
+/.env
+/bin/
+/buildout.cfg
+/include/
+/tags

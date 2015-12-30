@@ -1,0 +1,28 @@
+{% load trans from i18n %}
+{% load static from staticfiles %}
+{% load compress %}
+
+<!doctype html>
+<html lang="lt">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block head_title %}{% trans "Maisto banko savanorių duomenų bazė" %}{% endblock %}</title>
+
+    {% compress css %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}">
+    <link rel="stylesheet" type="text/x-scss" href="{% static "css/main.scss" %}">
+    {% endcompress %}
+  </head>
+  <body>
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+
+    <script src="{% static 'jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    {% include 'autocomplete_light/static.html' %}
+  </body>
+</html>
