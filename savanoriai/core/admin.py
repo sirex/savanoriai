@@ -1,16 +1,7 @@
 from django.contrib import admin
 
-from savanoriai.core.models import City, District, Volunteer
+from savanoriai.core.models import Campaign, Shift, Volunteer
 
-
-class DistrictInline(admin.TabularInline):
-    model = District
-
-
-class CityAdmin(admin.ModelAdmin):
-    inlines = [DistrictInline]
-
-admin.site.register(City, CityAdmin)
-
-
+admin.site.register(Campaign)
+admin.site.register(Shift)
 admin.site.register(Volunteer)

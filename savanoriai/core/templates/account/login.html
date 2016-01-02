@@ -18,7 +18,7 @@
 
     <h3>{% trans "Prisijungimas" %}</h3>
 
-    <form class="login" method="POST" action="{% url 'account_login' %}">
+    <form id="login" method="POST" action="{% url 'account_login' %}">
       {% csrf_token %}
       {{ form|bootstrap }}
       {% if redirect_field_value %}

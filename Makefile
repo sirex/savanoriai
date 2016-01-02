@@ -20,9 +20,10 @@ buildout.cfg: ; ./scripts/genconfig.py config/env/development.cfg
 
 bin/pip: ; virtualenv --no-site-packages --python=/usr/bin/python3 .
 
-bin/buildout: bin/pip ; $< install -r requirements.txt
+bin/buildout: bin/pip ; bin/pip install -r requirements.txt
 
-bin/django: bin/buildout buildout.cfg $(wildcard config/*.cfg) $(wildcard config/env/*.cfg) ; $<
+bin/django: setup.py setup.cfg buildout.cfg $(wildcard config/*.cfg) $(wildcard config/env/*.cfg)
+	bin/buildout && touch --no-create bin/django
 
 
 .PHONY: all help run tags
