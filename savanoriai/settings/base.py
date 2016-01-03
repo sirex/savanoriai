@@ -151,12 +151,11 @@ INSTALLED_APPS += ['django.contrib.sites']
 # Static assets, see config/assets.cfg
 # https://pypi.python.org/pypi/hexagonit.recipe.download
 
-STATICFILES_DIRS = (
+STATICFILES_DIRS = [
     root('parts', 'jquery'),
     root('parts', 'bootstrap'),
     root('parts', 'requirejs'),
-    root('parts', 'typeaheadjs'),
-)
+]
 
 
 # django-ompressor settings

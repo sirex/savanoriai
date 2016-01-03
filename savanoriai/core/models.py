@@ -51,7 +51,7 @@ class Volunteer(models.Model):
     place = models.ForeignKey(Place, verbose_name=_("Vieta"))
     phone = models.CharField(verbose_name=_("Telefonas"), max_length=255, blank=True)
     shift = models.ManyToManyField(Shift, verbose_name=_("Pamainos"))
-    experience = models.IntegerField(verbose_name=_("Patirtis"), blank=True)
+    experience = models.IntegerField(verbose_name=_("Patirtis"), null=True, blank=True)
     campaigns = models.ManyToManyField(Campaign, through='VolunteerCampaign', verbose_name=_("Akcijos"), editable=False)
 
     class Meta:

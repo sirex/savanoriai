@@ -18,7 +18,7 @@ class Command(BaseCommand):
             reader = codecs.getreader('utf-8')
             rows = csv.DictReader(reader(f))
             for row in tqdm.tqdm(rows):
-                place = Place(
+                Place.objects.create(
                     county=row['admin_level_4'],
                     municipality=row['admin_level_5'],
                     eldership=row['admin_level_5'],
@@ -31,4 +31,3 @@ class Command(BaseCommand):
                     wikipedia_lang=row['wikipedia_lang'],
                     wikipedia_title=row['wikipedia_title'],
                 )
-                place.save()

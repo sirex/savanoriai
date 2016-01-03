@@ -75,3 +75,22 @@ class VolunteerSignupForm(SignupForm, al.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
+
+    def custom_signup(self, request, user):
+        cldata = self.cleaned_data
+
+        print(cldata)
+
+        user.first_name = cldata['first_name']
+        user.last_name = cldata['last_name']
+        user.save()
+
+        volunteer = Volunteer.objects.create(
+            user=user,
+            place=cldata['place'],
+            phone=cldata['phone'],
+            experience=cldata['experience'],
+        )
+
+        for shift in cldata['shift']:
+            volunteer.shift.add(shift)
