@@ -47,7 +47,7 @@ class Organisation(models.Model):
 
 
 class Volunteer(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, editable=False)
     place = models.ForeignKey(Place, verbose_name=_("Vieta"))
     phone = models.CharField(verbose_name=_("Telefonas"), max_length=255, blank=True)
     shift = models.ManyToManyField(Shift, verbose_name=_("Pamainos"))
@@ -59,7 +59,7 @@ class Volunteer(models.Model):
         verbose_name_plural = _("Savanoriai")
 
     def __str__(self):
-        return self.user
+        return self.user.get_full_name()
 
 
 class VolunteerCampaign(models.Model):

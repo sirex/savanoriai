@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load bootstrap from bootstrap %}
+
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-5">
+    <h2>{% trans "Savanorio profilis" %}</h2>
+
+    <form id="volunteer_profile_form" method="post" action="{% url 'volunteer_profile' %}">
+      {% csrf_token %}
+      {{ profile_form|bootstrap }}
+      <div class="form-actions">
+        <button class="btn btn-primary" name="action" value="update_profile" type="submit">{% trans "Saugoti" %}</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-5 col-md-offset-1">
+    <h2>{% trans "Slaptažodžio keitimas" %}</h2>
+    <form id="change_password_form" method="post" action="{% url 'volunteer_profile' %}">
+      {% csrf_token %}
+      {{ password_form|bootstrap }}
+      <div class="form-actions">
+        <button class="btn btn-primary" name="action" value="change_password" type="submit">{% trans "Keisti slaptažodį" %}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

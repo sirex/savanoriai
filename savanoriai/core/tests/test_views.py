@@ -1,4 +1,7 @@
+import re
 import pytest
+
+from django.core import mail
 
 from django_webtest import DjangoTestApp, WebTestMixin
 
@@ -41,8 +44,10 @@ def test_index(app):
     form['agreement'] = True
     resp = form.submit()
     assert resp.status_int == 302, errors(resp)
+    assert len(mail.outbox) == 1
+    assert mail.outbox[0].subject == '[savanoriai.maistobankas.lt] Prašome patvirtinti savo el. pašto adresą'
 
-    # Check if suer was created
+    # Check if user was created
     volunteer = Volunteer.objects.get(user__email='test@example.com')
     assert volunteer.user.first_name == 'First'
     assert volunteer.user.last_name == 'Last'
@@ -52,3 +57,21 @@ def test_index(app):
     # Check redirect
     resp = resp.follow()
     assert resp.request.path == '/accounts/confirm-email/'
+
+    # Confirg email
+    confirmation_url = re.search(r'/accounts/confirm-email/[^/]+/', mail.outbox[0].body).group(0)
+    resp = app.get(confirmation_url)
+    resp = resp.form.submit()
+    resp = resp.follow()
+    assert resp.request.path == '/accounts/login/'
+
+    # Login
+    form = resp.forms['login']
+    form['login'] = 'test@example.com'
+    form['password'] = 'secret'
+    resp = form.submit()
+    assert resp.status_int == 302, errors(resp)
+
+    # Check redirect
+    resp = resp.follow()
+    assert resp.request.path == '/accounts/profile/'
