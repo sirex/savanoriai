@@ -1,0 +1,22 @@
+.autocomplete-light-widget > .deck > .hilight[data-value] {
+    border: 1px solid #4D4D4D;
+    line-height: 16px;
+    margin-bottom: 4px;
+    margin-right: 6px;
+    padding: 2px 4px;
+    padding-right: 6px;
+    border-radius: 6px;
+}
+
+.form-group .multiple-checkbox {
+    ul {
+        padding-left: 0;
+        & > li {
+            list-style-type: none;
+        }
+    }
+}
+
+.form-group .autocomplete-light-widget {
+    display: inline;
+}
