@@ -3,7 +3,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 
 from autocomplete_light import shortcuts as al
-from allauth.utils import email_address_exists
 from allauth.account.adapter import get_adapter
 from allauth.account.forms import SignupForm
 from allauth.account.models import EmailAddress
@@ -19,9 +18,23 @@ agreement_text = _(
 )
 
 
-class OrgSignupForm(SignupForm, al.ModelForm):
+def validate_profile_email(form, value):
+    value = get_adapter().clean_email(value)
+    if value and value != form.instance.user.email:
+        users = filter_users_by_email(value)
+        on_diff_account = [u for u in users if u.pk != form.instance.user.pk]
+        if on_diff_account:
+            raise forms.ValidationError(_("A user is already registered with this e-mail address."))
+        email_address = EmailAddress.objects.add_email(form.request, form.instance.user, value, confirm=True)
+        if not email_address.verified:
+            raise forms.ValidationError(_(
+                "Patikrinkite savo el. paštą ir patvirtinkite šį el. pašto adresą, tada galėsite jį naudoti."
+            ))
+    return value
+
+
+class OrganisationBaseForm(forms.Form):
     first_name = User._meta.get_field('first_name').formfield()
-    agreement = forms.BooleanField(initial=False, label=agreement_text)
 
     class Meta:
         model = Organisation
@@ -29,11 +42,8 @@ class OrgSignupForm(SignupForm, al.ModelForm):
         fields = [
             'first_name',
             'email',
-            'password1',
-            'password2',
             'phone',
             'places',
-            'agreement',
         ]
         help_texts = {
             'places': _("Mikrorajonai, gyvenvietės arba miestai, kuriuose darysite „Maisto banko“ akcijas."),
@@ -43,8 +53,69 @@ class OrgSignupForm(SignupForm, al.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        if kwargs.get('instance'):
+            organisation = kwargs['instance']
+            user = organisation.user
+            kwargs['initial'] = {
+                'first_name': user.first_name,
+                'email': user.email,
+                'phone': organisation.phone,
+                'places': organisation.places.all(),
+            }
+
         super().__init__(*args, **kwargs)
+
         self.fields['first_name'].required = True
+        self.fields['first_name'].label = _("Pavadinimas")
+
+    def update_profile(self, request, user, organisation):
+        cldata = self.cleaned_data
+
+        changed_email = self.instance and cldata['email'] and user.email != cldata['email']
+
+        user.first_name = cldata['first_name']
+        user.email = cldata['email']
+        user.save()
+
+        organisation.user = user
+        organisation.phone = cldata['phone']
+        organisation.save()
+        organisation.places = cldata['places']
+
+        if changed_email:
+            email_address = EmailAddress.objects.add_email(request, user, cldata['email'], confirm=True)
+            email_address.set_as_primary()
+
+
+class OrganisationProfileForm(OrganisationBaseForm, al.ModelForm):
+    email = forms.EmailField(widget=forms.TextInput(attrs={'type': 'email'}))
+
+    def __init__(self, request, *args, **kwargs):
+        self.request = request
+        super().__init__(*args, **kwargs)
+
+    def clean_email(self):
+        value = self.cleaned_data["email"]
+        return validate_profile_email(self, value)
+
+
+class OrgSignupForm(SignupForm, OrganisationBaseForm, al.ModelForm):
+    agreement = forms.BooleanField(initial=False, label=agreement_text)
+
+    class Meta(OrganisationBaseForm.Meta):
+        fields = [
+            'first_name',
+            'email',
+            'password1',
+            'password2',
+            'phone',
+            'places',
+            'agreement',
+        ]
+
+    def custom_signup(self, request, user):
+        organisation = Organisation()
+        self.update_profile(request, user, organisation)
 
 
 class VolunteerBaseForm(forms.Form):
@@ -121,18 +192,7 @@ class VolunteerProfileForm(VolunteerBaseForm, al.ModelForm):
 
     def clean_email(self):
         value = self.cleaned_data["email"]
-        value = get_adapter().clean_email(value)
-        if value and value != self.instance.user.email:
-            users = filter_users_by_email(value)
-            on_diff_account = [u for u in users if u.pk != self.instance.user.pk]
-            if on_diff_account:
-                raise forms.ValidationError(_("A user is already registered with this e-mail address."))
-            email_address = EmailAddress.objects.add_email(self.request, self.instance.useruser, value, confirm=True)
-            if not email_address.verified:
-                raise forms.ValidationError(_(
-                    "Patikrinkite savo el. paštą ir patvirtinkite šį el. pašto adresą, tada galėsite jį naudoti."
-                ))
-        return value
+        return validate_profile_email(self, value)
 
 
 class VolunteerSignupForm(SignupForm, VolunteerBaseForm, al.ModelForm):

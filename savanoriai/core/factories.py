@@ -1,9 +1,12 @@
 import funcy
 import factory
 
+from django.conf import settings
+
 from factory.django import DjangoModelFactory
 
-from savanoriai.core.models import Place, Shift
+from allauth.account.models import EmailAddress
+from savanoriai.core.models import Place, Shift, Organisation, Volunteer
 
 
 class PlaceFactory(DjangoModelFactory):
@@ -21,6 +24,7 @@ class PlaceFactory(DjangoModelFactory):
 
     class Meta:
         model = Place
+        django_get_or_create = ('wikipedia_title',)
 
 
 shifts = [
@@ -38,3 +42,66 @@ class ShiftFactory(DjangoModelFactory):
 
     class Meta:
         model = Shift
+        django_get_or_create = ('title',)
+
+
+class EmailAddressFactory(DjangoModelFactory):
+    email = factory.SelfAttribute('user.email')
+    verified = True
+    primary = True
+
+    class Meta:
+        model = EmailAddress
+        django_get_or_create = ('email',)
+
+
+class UserFactory(DjangoModelFactory):
+    first_name = 'Vardenis'
+    last_name = 'Pavardenis'
+    email = 'text@example.com'
+    is_active = True
+    emailaddress = factory.RelatedFactory(EmailAddressFactory, 'user')
+
+    class Meta:
+        model = settings.AUTH_USER_MODEL
+        django_get_or_create = ('username',)
+
+
+class OrganisationFactory(DjangoModelFactory):
+    user = factory.SubFactory(
+        UserFactory,
+        username='org',
+        email='org@example.com',
+        first_name='Organizacija',
+        last_name='',
+    )
+    phone = '111111111'
+
+    class Meta:
+        model = Organisation
+
+    @factory.post_generation
+    def places(self, create, extracted, **kwargs):
+        if create:
+            self.places = extracted or [PlaceFactory()]
+
+
+class VolunteerFactory(DjangoModelFactory):
+    user = factory.SubFactory(
+        UserFactory,
+        username='volunteer',
+        email='volunteer@example.com',
+        first_name='Volunteer',
+        last_name='Volunteerer',
+    )
+    phone = '111111112'
+    place = factory.SubFactory(PlaceFactory)
+    experience = 1
+
+    class Meta:
+        model = Volunteer
+
+    @factory.post_generation
+    def shift(self, create, extracted, **kwargs):
+        if create:
+            self.shift = extracted or [ShiftFactory(title='Pirmadienis (14:45-18:00)')]

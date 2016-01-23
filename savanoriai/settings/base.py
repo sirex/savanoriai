@@ -196,6 +196,8 @@ INSTALLED_APPS += [
     'allauth.account',
 ]
 
+ACCOUNT_ADAPTER = 'savanoriai.core.allauth.AccountAdapter'
+
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 ACCOUNT_EMAIL_REQUIRED = True

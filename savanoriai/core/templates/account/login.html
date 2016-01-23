@@ -11,13 +11,13 @@
     <h3>{% trans "Registracija" %}</h3>
 
     <a class="btn btn-default btn-lg btn-block" href="{% url 'signup_volunteer' %}">{% trans "Savanoriams" %}</a>
-    <a class="btn btn-default btn-lg btn-block" href="{% url 'signup_org' %}">{% trans "Organizacijoms" %}</a>
+    <a class="btn btn-default btn-lg btn-block" href="{% url 'signup_organisation' %}">{% trans "Organizacijoms" %}</a>
   </div>
 
   <div class="col-md-4 col-md-offset-1">
     <h3>{% trans "Prisijungimas" %}</h3>
 
-    <form id="login" method="POST" action="{% url 'account_login' %}">
+    <form id="login" method="POST" action="{% url 'index' %}">
       {% csrf_token %}
       {{ form|bootstrap }}
       {% if redirect_field_value %}

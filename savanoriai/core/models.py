@@ -38,7 +38,7 @@ class Shift(models.Model):
 
 
 class Organisation(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, editable=False)
     places = models.ManyToManyField(Place, verbose_name=_("Vietos"))
     phone = models.CharField(verbose_name=_("Telefonas"), max_length=255)
 
