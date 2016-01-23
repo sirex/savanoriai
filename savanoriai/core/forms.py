@@ -124,18 +124,18 @@ class VolunteerBaseForm(forms.Form):
 
     class Meta:
         model = Volunteer
-        autocomplete_fields = ('place',)
+        autocomplete_fields = ('places',)
         fields = [
             'first_name',
             'last_name',
             'email',
             'phone',
-            'place',
+            'places',
             'shift',
             'experience',
         ]
         help_texts = {
-            'place': _("Mikrorajonas, gyvenvietė arba miestas, kuriame norite savanoriauti."),
+            'places': _("Mikrorajonai, gyvenvietės arba miestai, kuriuose norėtumėte savanoriauti."),
             'experience': _("Nurodykite, kiek kartų jau esate savanoriavę."),
         }
         widgets = {
@@ -151,7 +151,7 @@ class VolunteerBaseForm(forms.Form):
                 'last_name': user.last_name,
                 'email': user.email,
                 'phone': volunteer.phone,
-                'place': volunteer.place,
+                'places': volunteer.places.all(),
                 'shift': volunteer.shift.all(),
                 'experience': volunteer.experience,
             }
@@ -172,10 +172,10 @@ class VolunteerBaseForm(forms.Form):
         user.save()
 
         volunteer.user = user
-        volunteer.place = cldata['place']
         volunteer.phone = cldata['phone']
         volunteer.experience = cldata['experience']
         volunteer.save()
+        volunteer.places = cldata['places']
         volunteer.shift = cldata['shift']
 
         if changed_email:
@@ -206,7 +206,7 @@ class VolunteerSignupForm(SignupForm, VolunteerBaseForm, al.ModelForm):
             'password1',
             'password2',
             'phone',
-            'place',
+            'places',
             'shift',
             'experience',
         ]

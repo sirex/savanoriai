@@ -39,7 +39,7 @@ def test_volunteer(app):
     form['email'] = 'test@example.com'
     form['password1'] = 'secret'
     form['password2'] = 'secret'
-    form['place'].force_value([place.pk])
+    form['places'].force_value([place.pk])
     form['shift'] = [shifts[0].pk]
     form['agreement'] = True
     resp = form.submit()
@@ -51,7 +51,7 @@ def test_volunteer(app):
     volunteer = Volunteer.objects.get(user__email='test@example.com')
     assert volunteer.user.first_name == 'First'
     assert volunteer.user.last_name == 'Last'
-    assert volunteer.place.wikipedia_title == 'Senamiestis'
+    assert [x.wikipedia_title for x in volunteer.places.all()] == ['Senamiestis']
     assert [shift.title for shift in volunteer.shift.all()] == ['Pirmadienis (14:45-18:00)']
 
     # Check redirect
@@ -88,7 +88,7 @@ def test_volunteer_profile(app):
     form = resp.forms['volunteer_profile_form']
     form['first_name'] = 'New first'
     form['last_name'] = 'New last'
-    form['place'].force_value([naujamiestis.pk])
+    form['places'].force_value([naujamiestis.pk])
     resp = form.submit('action', value='update_profile')
     assert resp.status_int == 302, errors(resp)
     assert len(mail.outbox) == 0
@@ -101,7 +101,7 @@ def test_volunteer_profile(app):
     volunteer = Volunteer.objects.get(pk=volunteer.pk)
     assert volunteer.user.first_name == 'New first'
     assert volunteer.user.last_name == 'New last'
-    assert volunteer.place.wikipedia_title == 'Naujamiestis'
+    assert [x.wikipedia_title for x in volunteer.places.all()] == ['Naujamiestis']
 
 
 def test_volunteer_change_email(app):

@@ -95,11 +95,15 @@ class VolunteerFactory(DjangoModelFactory):
         last_name='Volunteerer',
     )
     phone = '111111112'
-    place = factory.SubFactory(PlaceFactory)
     experience = 1
 
     class Meta:
         model = Volunteer
+
+    @factory.post_generation
+    def places(self, create, extracted, **kwargs):
+        if create:
+            self.places = extracted or [PlaceFactory()]
 
     @factory.post_generation
     def shift(self, create, extracted, **kwargs):

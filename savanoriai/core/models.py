@@ -48,7 +48,7 @@ class Organisation(models.Model):
 
 class Volunteer(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, editable=False)
-    place = models.ForeignKey(Place, verbose_name=_("Vieta"))
+    places = models.ManyToManyField(Place, verbose_name=_("Vietos"))
     phone = models.CharField(verbose_name=_("Telefonas"), max_length=255, blank=True)
     shift = models.ManyToManyField(Shift, verbose_name=_("Pamainos"))
     experience = models.IntegerField(verbose_name=_("Patirtis"), null=True, blank=True)
