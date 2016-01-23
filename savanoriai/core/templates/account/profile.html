@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "volunteers/base.html" %}
 
 {% load i18n %}
 {% load bootstrap from bootstrap %}
@@ -7,7 +7,7 @@
 {% block content %}
 
 <div class="row">
-  <div class="col-md-5">
+  <div class="col-md-5 col-md-offset-1">
     <h2>{% trans "Savanorio profilis" %}</h2>
 
     <form id="volunteer_profile_form" method="post" action="{% url 'volunteer_profile' %}">
@@ -18,7 +18,7 @@
       </div>
     </form>
   </div>
-  <div class="col-md-5 col-md-offset-1">
+  <div class="col-md-4 col-md-offset-1">
     <h2>{% trans "Slaptažodžio keitimas" %}</h2>
     <form id="change_password_form" method="post" action="{% url 'volunteer_profile' %}">
       {% csrf_token %}
