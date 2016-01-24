@@ -2,14 +2,25 @@
 
 {% load i18n %}
 {% load bootstrap from bootstrap %}
+{% load render_node from navutils_tags %}
 
 
 {% block navbar_right %}
 <p class="navbar-text navbar-right">
-  <strong>{{ user.get_full_name }}</strong> |
   <a href="{% url 'account_logout' %}" class="navbar-link">
-    Atsijungti
     <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+    Atsijungti
   </a>
 </p>
+<ul class="nav navbar-nav navbar-right">
+  {% for item in menus.main.organisation.children %}
+    {% render_node item user=request.user %}
+  {% endfor %}
+  <li{% if current_menu_item == 'organisation:profile' %} class="active"{% endif %}>
+    <a href="{% url 'organisation_profile' %}">
+      <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+      <strong>{{ user.get_full_name }}</strong>
+    </a>
+  </li>
+</ul>
 {% endblock %}

@@ -20,4 +20,7 @@ urlpatterns = [
     url(r'^organisation/profile/$', views.organisation_profile, name='organisation_profile'),
     url(r'^volunteer/signup/$', signup_volunteer, name='signup_volunteer'),
     url(r'^volunteer/profile/$', views.volunteer_profile, name='volunteer_profile'),
+    url(r'^volunteers/$', views.volunteers_list, name='volunteers_list'),
+    url(r'^volunteers/toggle-choice/$', views.toggle_choice, name='toggle_choice'),
+    url(r'^volunteer/confirm-invite/(?P<volunteer_campaign_id>[^/]+)/$', views.confirm_invite, name='confirm_invite'),
 ]

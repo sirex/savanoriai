@@ -1,0 +1,59 @@
+{% extends "organisations/base.html" %}
+
+{% load i18n %}
+
+{% url 'toggle_choice' as toggle_choice_url %}
+
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-9">
+    <h3>{% trans "Savanoriai" %}</h3>
+
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#">{% trans 'Visi' %}</a></li>
+      <li><a href="#">{% trans 'Atrinktieji' %}</a></li>
+    </ul>
+
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>{% trans "Savanoris" %}</th>
+          <th>{% trans "Pamainos" %}</th>
+          <th>{% trans "Vietos" %}</th>
+          <th>{% trans "Patirtis" %}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for volunteer in volunteers %}
+        <tr>
+          <td>{{ volunteer.user.get_full_name }}</td>
+          <td>
+            {% for shift in volunteer.shift.all %}
+            {{ shift }}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </td>
+          <td>
+            {% for place in volunteer.places.all %}
+            {{ place }}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </td>
+          <td class="numeric">{{ volunteer.experience|default_if_none:'-' }}</td>
+          <td class="table-row-actions">
+            <a href="#" class="btn btn-default btn-sm" onclick="savanoriai.toggle_choice(this, '{{ toggle_choice_url }}', {{ volunteer.pk }});">
+              {% trans 'Pasirinkti' %}
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-3">
+    <h3>{% trans "Filtras" %}</h3>
+  </div>
+</div>
+
+{% endblock %}

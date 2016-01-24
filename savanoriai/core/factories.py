@@ -1,12 +1,22 @@
 import funcy
 import factory
+import datetime
 
 from django.conf import settings
 
 from factory.django import DjangoModelFactory
 
 from allauth.account.models import EmailAddress
-from savanoriai.core.models import Place, Shift, Organisation, Volunteer
+from savanoriai.core.models import Place, Shift, Organisation, Volunteer, Campaign
+
+
+class CampaignFactory(DjangoModelFactory):
+    start_date = datetime.datetime(2016, 1, 24)
+    end_date = datetime.datetime(2016, 1, 24)
+    is_active = True
+
+    class Meta:
+        model = Campaign
 
 
 class PlaceFactory(DjangoModelFactory):
@@ -58,7 +68,7 @@ class EmailAddressFactory(DjangoModelFactory):
 class UserFactory(DjangoModelFactory):
     first_name = 'Vardenis'
     last_name = 'Pavardenis'
-    email = 'text@example.com'
+    email = factory.LazyAttribute(lambda x: '%s@example.com' % x.username)
     is_active = True
     emailaddress = factory.RelatedFactory(EmailAddressFactory, 'user')
 
@@ -71,7 +81,6 @@ class OrganisationFactory(DjangoModelFactory):
     user = factory.SubFactory(
         UserFactory,
         username='org',
-        email='org@example.com',
         first_name='Organizacija',
         last_name='',
     )

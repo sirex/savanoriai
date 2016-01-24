@@ -23,6 +23,11 @@ class Place(models.Model):
 class Campaign(models.Model):
     start_date = models.DateField(verbose_name=_("Pradžia"))
     end_date = models.DateField(verbose_name=_("Pabaiga"))
+    is_active = models.BooleanField(verbose_name=_("Aktyvi"), default=False)
+
+    class Meta:
+        verbose_name = _("Akcija")
+        verbose_name_plural = _("Akcijos")
 
 
 class Shift(models.Model):
@@ -67,3 +72,5 @@ class VolunteerCampaign(models.Model):
     campaign = models.ForeignKey(Campaign, verbose_name=_("Akcija"))
     organisation = models.ForeignKey(Organisation, verbose_name=_("Organizacija"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Užsiregistravo"))
+    accepted = models.NullBooleanField(verbose_name=_("Priimta"))
+    removed = models.BooleanField(verbose_name=_("Pašalinta organizacijos"), default=False)

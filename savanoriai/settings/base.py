@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'savanoriai.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db(default='sqlite:///var/db.sqlite3'),
+    'default': env.db(default='psql:///mbsavanoriai'),
 }
 
 
@@ -213,3 +213,19 @@ ACCOUNT_USERNAME_REQUIRED = False
 INSTALLED_APPS += [
     'bootstrapform',
 ]
+
+
+# django-navutils
+# https://github.com/EliotBerriot/django-navutils
+
+INSTALLED_APPS += [
+    'navutils',
+]
+
+TEMPLATES[0]['OPTIONS']['context_processors'] += [
+    'navutils.context_processors.menus',
+]
+
+NAVUTILS_MENU_CONFIG = {
+    'CURRENT_MENU_ITEM_CLASS': 'active',
+}

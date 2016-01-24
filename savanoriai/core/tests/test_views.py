@@ -6,13 +6,14 @@ from django.core import mail
 from django_webtest import DjangoTestApp, WebTestMixin
 
 from savanoriai.core import factories
-from savanoriai.core.models import Volunteer, Organisation
+from savanoriai.core.models import Volunteer, Organisation, VolunteerCampaign
 
 
 @pytest.fixture
 def app(request, db):
     mixin = WebTestMixin()
     mixin._patch_settings()
+    mixin._disable_csrf_checks()
     request.addfinalizer(mixin._unpatch_settings)
     return DjangoTestApp(extra_environ=mixin.extra_environ)
 
@@ -310,3 +311,55 @@ def test_organisation_change_password(app):
     # Check if for was saved
     organisation = Organisation.objects.get(pk=organisation.pk)
     assert organisation.user.check_password('naujas')
+
+
+def test_toggle_choice(app):
+    campaign = factories.CampaignFactory()
+    organisation = factories.OrganisationFactory()
+    other_organisation = factories.OrganisationFactory(user__username='org2')
+    volunteer = factories.VolunteerFactory()
+    user = organisation.user.username
+
+    def volunteer_campaigns():
+        return [x.organisation for x in VolunteerCampaign.objects.filter(campaign=campaign, volunteer=volunteer)]
+
+    assert volunteer_campaigns() == []
+
+    resp = app.post('/volunteers/toggle-choice/', {'volunteer_id': volunteer.pk}, user=user)
+    assert resp.status_int == 200
+    assert resp.json == {'label': 'Pakviesta', 'state': 'invited'}
+    assert volunteer_campaigns() == [organisation]
+
+    resp = app.post('/volunteers/toggle-choice/', {'volunteer_id': volunteer.pk}, user=user)
+    assert resp.status_int == 200
+    assert resp.json == {'label': 'Pakviesta', 'state': 'invited'}
+    assert volunteer_campaigns() == [organisation]
+
+    user = other_organisation.user.username
+    resp = app.post('/volunteers/toggle-choice/', {'volunteer_id': volunteer.pk}, user=user)
+    assert resp.status_int == 200
+    assert resp.json == {'label': 'Užimta', 'state': 'taken'}
+    assert volunteer_campaigns() == [organisation]
+
+    vc = VolunteerCampaign.objects.get(campaign=campaign, volunteer=volunteer, organisation=organisation)
+    vc.accepted = True
+    vc.save()
+    user = organisation.user.username
+    resp = app.post('/volunteers/toggle-choice/', {'volunteer_id': volunteer.pk}, user=user)
+    assert resp.status_int == 200
+    assert resp.json == {'label': 'Patvirtinta', 'state': 'accepted'}
+    assert volunteer_campaigns() == [organisation]
+
+    user = other_organisation.user.username
+    resp = app.post('/volunteers/toggle-choice/', {'volunteer_id': volunteer.pk}, user=user)
+    assert resp.status_int == 200
+    assert resp.json == {'label': 'Užimta', 'state': 'taken'}
+    assert volunteer_campaigns() == [organisation]
+
+    vc.accepted = False
+    vc.save()
+    user = organisation.user.username
+    resp = app.post('/volunteers/toggle-choice/', {'volunteer_id': volunteer.pk}, user=user)
+    assert resp.status_int == 200
+    assert resp.json == {'label': 'Atmesta', 'state': 'rejected'}
+    assert volunteer_campaigns() == [organisation]
