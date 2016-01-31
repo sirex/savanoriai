@@ -3,7 +3,7 @@
 
     var savanoriai = window.savanoriai;
 
-    savanoriai.toggle_choice(button, url, volunteer_id) {
+    savanoriai.toggle_choice = function(button, url, volunteer_id) {
         $.post(url, {'volunteer_id': volunteer_id}, function(data) {
             if (data.state == 'free') {
                 label = 'info';

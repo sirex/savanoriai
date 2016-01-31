@@ -1,20 +1,16 @@
 {% extends "organisations/base.html" %}
 
 {% load i18n %}
-
-{% url 'toggle_choice' as toggle_choice_url %}
+{% load bootstrap from bootstrap %}
 
 
 {% block content %}
 
+{% url 'toggle_choice' as toggle_choice_url %}
+
 <div class="row">
   <div class="col-md-9">
     <h3>{% trans "Savanoriai" %}</h3>
-
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#">{% trans 'Visi' %}</a></li>
-      <li><a href="#">{% trans 'Atrinktieji' %}</a></li>
-    </ul>
 
     <table class="table table-hover">
       <thead>
@@ -50,9 +46,38 @@
         {% endfor %}
       </tbody>
     </table>
+
+    {% if volunteers.paginator.num_pages > 1 %}
+    <nav>
+      <ul class="pagination">
+        <li{% if not volunteers.has_previous %} class="disabled"{% endif %}>
+          <a href="{% if volunteers.has_previous %}?page={{ volunteers.previous_page_number }}{% else %}#{% endif %}">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {% for page in volunteers.paginator.page_range %}
+        <li{% if volunteers.number == page %} class="active"{% endif %}>
+          <a href="{% if volunteers.number == page %}#{% else %}?page={{ page }}{% endif %}">{{ page }}</a>
+        </li>
+        {% endfor %}
+        <li{% if not volunteers.has_next %}  class="disabled"{% endif %}>
+          <a href="{% if volunteers.has_next %}?page={{ volunteers.next_page_number }}{% else %}#{% endif %}">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    {% endif %}
+
   </div>
   <div class="col-md-3">
     <h3>{% trans "Filtras" %}</h3>
+    <form id="volunteer_filter_form" method="get" action="{% url 'volunteers_list' %}">
+      {{ filter|bootstrap }}
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">{% trans "Filtruoti" %}</button>
+      </div>
+    </form>
   </div>
 </div>
 

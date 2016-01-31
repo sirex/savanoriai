@@ -6,12 +6,13 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext
 from django.db import transaction, connection
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from allauth.account.forms import ChangePasswordForm
 from allauth.account.decorators import verified_email_required
 
 from savanoriai.core.models import Volunteer, Organisation, VolunteerCampaign
-from savanoriai.core.forms import VolunteerProfileForm, OrganisationProfileForm
+from savanoriai.core.forms import VolunteerProfileForm, OrganisationProfileForm, VolunteerFilterForm
 from savanoriai.core.services import get_active_campaign_or_404, log_user_in, get_volunteer_status
 
 
@@ -85,8 +86,40 @@ def volunteer_profile(request):
 
 @verified_email_required()
 def volunteers_list(request):
+    filter_form = VolunteerFilterForm(request.GET)
+
+    qs = Volunteer.objects.all()
+
+    if filter_form.is_valid():
+        cld = filter_form.cleaned_data
+
+        if cld['places']:
+            qs = qs.filter(places__id__in=[x.pk for x in cld['places']])
+
+        if cld['shifts']:
+            qs = qs.filter(shift__id__in=[x.pk for x in cld['shifts']])
+
+    qs = (
+        qs.
+        distinct().
+        select_related('user').
+        prefetch_related('shift', 'places').
+        order_by('user__first_name', 'user__last_name', 'id')
+    )
+
+    rows_per_page = 25
+    paginator = Paginator(qs, rows_per_page)
+
+    try:
+        volunteers = paginator.page(request.GET.get('page'))
+    except PageNotAnInteger:
+        volunteers = paginator.page(1)
+    except EmptyPage:
+        volunteers = paginator.page(paginator.num_pages)
+
     return render(request, 'organisations/volunteers_list.html', {
-        'volunteers': Volunteer.objects.all(),
+        'filter': filter_form,
+        'volunteers': volunteers,
         'current_menu_item': 'organisation:volunteers',
     })
 

@@ -118,3 +118,31 @@ class VolunteerFactory(DjangoModelFactory):
     def shift(self, create, extracted, **kwargs):
         if create:
             self.shift = extracted or [ShiftFactory(title='Pirmadienis (14:45-18:00)')]
+
+
+def create_volunteers(n=1):
+    import faker
+    import random
+
+    fake = faker.Faker('lt')
+
+    volunteers = []
+
+    for i in range(n):
+        profile = fake.profile()
+        volunteer = VolunteerFactory(
+            user__username=profile['username'],
+            user__email=profile['mail'],
+            user__first_name=profile['name'].split()[0],
+            user__last_name=profile['name'].split()[1],
+            phone=fake.phone_number(),
+            experience=random.choice([None, 1, 2, 3, 4, 5, 6]),
+            shift=[ShiftFactory(title=random.choice(shifts)) for j in range(random.randint(1, len(shifts)))],
+            places=[Place.objects.order_by('?').first() for j in range(random.randint(1, 2))],
+        )
+        user = volunteer.user
+        user.set_password('savanoris')
+        user.save()
+        volunteers.append(volunteer)
+
+    return volunteers

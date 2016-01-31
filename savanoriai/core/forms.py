@@ -8,7 +8,7 @@ from allauth.account.forms import SignupForm
 from allauth.account.models import EmailAddress
 from allauth.account.utils import filter_users_by_email
 
-from savanoriai.core.models import Volunteer, Organisation
+from savanoriai.core.models import Volunteer, Organisation, Shift
 
 User = get_user_model()
 
@@ -214,3 +214,13 @@ class VolunteerSignupForm(SignupForm, VolunteerBaseForm, al.ModelForm):
     def custom_signup(self, request, user):
         volunteer = Volunteer()
         self.update_profile(request, user, volunteer)
+
+
+class VolunteerFilterForm(forms.Form):
+    places = al.ModelMultipleChoiceField('PlaceAutocomplete', label=_("Vietos"), required=False)
+    shifts = forms.ModelMultipleChoiceField(
+        label=_("Pamainos"),
+        widget=forms.CheckboxSelectMultiple(),
+        queryset=Shift.objects.filter(visible=True).order_by('title'),
+        required=False,
+    )

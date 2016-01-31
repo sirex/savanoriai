@@ -5,7 +5,7 @@ import autocomplete_light.shortcuts as al
 from savanoriai.core.models import Place
 
 
-class CityAutocomplete(al.AutocompleteModelBase):
+class PlaceAutocomplete(al.AutocompleteModelBase):
     model = Place
     search_fields = ['^wikipedia_title']
     limit_choices = 8
@@ -16,4 +16,4 @@ class CityAutocomplete(al.AutocompleteModelBase):
         'placeholder': _('Įveskite kelias vietovės raides'),
     }
 
-al.register(CityAutocomplete)
+al.register(PlaceAutocomplete)
