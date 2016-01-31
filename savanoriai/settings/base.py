@@ -179,7 +179,7 @@ INSTALLED_APPS += [
 ]
 
 LOCALE_PATHS = [
-    '/home/sirex/devel/contrib/django-allauth/allauth/locale',
+    root('savanoriai', 'locale'),
 ]
 
 
