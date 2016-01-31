@@ -37,7 +37,7 @@ def volunteer_state(organisation, volunteer):
             '<a %s>' % ' '.join([
                 'href="#"',
                 'class="btn btn-default btn-sm"',
-                'onclick="savanoriai.toggle_choice(this, \'%s\', %r);"' % (
+                'onclick="savanoriai.toggle_choice(this, \'%s\', %r); return false;"' % (
                     reverse('toggle_choice'),
                     volunteer.pk
                 ),

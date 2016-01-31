@@ -1,0 +1,14 @@
+Laba diena,
+
+Jūsų pasirinktas savanoris priėmė kvietimą savanoriauti. Kviečiame su juo
+susisiekti ne vėliau kaip per 24 val. bei susitarti dėl savanorystės vietos,
+laiko, mokymų ir kitų detalių. Nesusisiekus su savanoriu per nurodytą laiką,
+jis grįš į savanorių duomenų bazę ir taps prieinamas kitoms organizacijoms.
+
+Savanorio duomenys:
+
+{{ volunteer }}
+{{ volunteer.user.email }}
+
+Pagarbiai,
+„Maisto banko“ atstovai

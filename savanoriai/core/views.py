@@ -1,4 +1,4 @@
-from itsdangerous import URLSafeSerializer
+from itsdangerous import URLSafeSerializer, BadSignature
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404, JsonResponse
@@ -195,7 +195,12 @@ def toggle_choice(request):
 
 def confirm_invite(request, volunteer_campaign_id):
     serializer = URLSafeSerializer(settings.SECRET_KEY)
-    volunteer_campaign_id = serializer.loads(volunteer_campaign_id)
+
+    try:
+        volunteer_campaign_id = serializer.loads(volunteer_campaign_id)
+    except BadSignature as e:
+        raise Http404(str(e))
+
     volunteer_campaign = get_object_or_404(VolunteerCampaign, pk=volunteer_campaign_id)
 
     if request.user.is_authenticated() and volunteer_campaign.volunteer != request.user.volunteer:
@@ -208,6 +213,9 @@ def confirm_invite(request, volunteer_campaign_id):
     if request.method == 'POST':
         if request.POST.get('action') == 'accept':
             volunteer_campaign.accepted = True
+            get_adapter().send_mail('emails/volunteer_accept', volunteer_campaign.organisation.user.email, {
+                'volunteer': volunteer_campaign.volunteer,
+            })
         else:
             volunteer_campaign.accepted = False
         volunteer_campaign.save()

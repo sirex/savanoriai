@@ -214,6 +214,15 @@ INSTALLED_APPS += [
     'bootstrapform',
 ]
 
+MESSAGE_TAGS = {
+    # https://docs.djangoproject.com/en/1.9/ref/contrib/messages/#creating-custom-message-levels
+    10: 'info',  # debug
+    20: 'info',  # infor
+    25: 'success',  # success
+    30: 'warning',  # warning
+    40: 'danger',  # error
+}
+
 
 # django-navutils
 # https://github.com/EliotBerriot/django-navutils
