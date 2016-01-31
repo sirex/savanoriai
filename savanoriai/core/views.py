@@ -101,6 +101,24 @@ def volunteers_list(request):
         if cld['shifts']:
             qs = qs.filter(shift__id__in=[x.pk for x in cld['shifts']])
 
+        if cld['state'] == 'accepted':
+            qs = qs.filter(
+                campaigns=campaign,
+                states__organisation__pk=request.user.organisation.pk,
+                states__accepted=True,
+            )
+        elif cld['state'] == 'available':
+            qs = qs.exclude(states__in=VolunteerCampaign.objects.distinct().filter(
+                Q(accepted=True) |
+                Q(accepted__isnull=True),
+                campaign_id=campaign.pk,
+            ))
+        elif cld['state'] == 'invited':
+            qs = qs.filter(
+                campaigns=campaign,
+                states__organisation=request.user.organisation,
+            )
+
     qs = (
         qs.
         distinct().

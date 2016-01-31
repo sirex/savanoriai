@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load bootstrap from bootstrap %}
 {% load volunteer_state from savanoriaitags %}
+{% load qurl from qurl %}
 
 
 {% block content %}
@@ -18,7 +19,7 @@
           <th>{% trans "Pamainos" %}</th>
           <th>{% trans "Vietos" %}</th>
           <th>{% trans "Patirtis" %}</th>
-          <th></th>
+          <th>{% trans "Būsena" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -48,17 +49,17 @@
     <nav>
       <ul class="pagination">
         <li{% if not volunteers.has_previous %} class="disabled"{% endif %}>
-          <a href="{% if volunteers.has_previous %}?page={{ volunteers.previous_page_number }}{% else %}#{% endif %}">
+          <a href="{% if volunteers.has_previous %}{% qurl request.get_full_path page=volunteers.previous_page_number %}{% else %}#{% endif %}">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
         {% for page in volunteers.paginator.page_range %}
         <li{% if volunteers.number == page %} class="active"{% endif %}>
-          <a href="{% if volunteers.number == page %}#{% else %}?page={{ page }}{% endif %}">{{ page }}</a>
+          <a href="{% if volunteers.number == page %}#{% else %}{% qurl request.get_full_path page=page %}{% endif %}">{{ page }}</a>
         </li>
         {% endfor %}
         <li{% if not volunteers.has_next %}  class="disabled"{% endif %}>
-          <a href="{% if volunteers.has_next %}?page={{ volunteers.next_page_number }}{% else %}#{% endif %}">
+          <a href="{% if volunteers.has_next %}{% qurl request.get_full_path page=volunteers.next_page_number %}{% else %}#{% endif %}">
             <span aria-hidden="true">&raquo;</span>
           </a>
         </li>

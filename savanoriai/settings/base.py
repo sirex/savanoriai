@@ -229,3 +229,10 @@ TEMPLATES[0]['OPTIONS']['context_processors'] += [
 NAVUTILS_MENU_CONFIG = {
     'CURRENT_MENU_ITEM_CLASS': 'active',
 }
+
+# django-qurl
+# https://pypi.python.org/pypi/django-qurl
+
+INSTALLED_APPS += [
+    'qurl',
+]

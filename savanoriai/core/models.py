@@ -81,7 +81,7 @@ class VolunteerCampaign(models.Model):
             False - Volunteer refused inviation
 
     """
-    volunteer = models.ForeignKey(Volunteer, verbose_name=_("Savanoris"))
+    volunteer = models.ForeignKey(Volunteer, verbose_name=_("Savanoris"), related_name='states')
     campaign = models.ForeignKey(Campaign, verbose_name=_("Akcija"))
     organisation = models.ForeignKey(Organisation, verbose_name=_("Organizacija"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Užsiregistravo"))

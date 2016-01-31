@@ -217,6 +217,13 @@ class VolunteerSignupForm(SignupForm, VolunteerBaseForm, al.ModelForm):
 
 
 class VolunteerFilterForm(forms.Form):
+    STATE_CHOICES = (
+        ('all', _("Visi")),
+        ('accepted', _("Priimti")),
+        ('available', _("Laisvi")),
+        ('invited', _("Pakviesti")),
+    )
+
     places = al.ModelMultipleChoiceField('PlaceAutocomplete', label=_("Vietos"), required=False)
     shifts = forms.ModelMultipleChoiceField(
         label=_("Pamainos"),
@@ -224,3 +231,4 @@ class VolunteerFilterForm(forms.Form):
         queryset=Shift.objects.filter(visible=True).order_by('title'),
         required=False,
     )
+    state = forms.ChoiceField(choices=STATE_CHOICES, initial='all', required=False, label=_("Būsena"))

@@ -16,7 +16,7 @@ class AccountAdapter(DefaultAccountAdapter):
         except Organisation.DoesNotExist:
             pass
         else:
-            return reverse('organisation_profile')
+            return reverse('volunteers_list')
 
         try:
             request.user.volunteer
