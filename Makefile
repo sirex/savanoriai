@@ -22,7 +22,7 @@ bin/pip: ; virtualenv --no-site-packages --python=/usr/bin/python3 .
 
 bin/buildout: bin/pip ; bin/pip install -r requirements.txt
 
-bin/django: setup.py setup.cfg buildout.cfg $(wildcard config/*.cfg) $(wildcard config/env/*.cfg)
+bin/django: bin/buildout setup.py setup.cfg buildout.cfg $(wildcard config/*.cfg) $(wildcard config/env/*.cfg)
 	bin/buildout && touch --no-create bin/django
 
 
