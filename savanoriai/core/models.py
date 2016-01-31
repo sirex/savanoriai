@@ -51,7 +51,7 @@ class Organisation(models.Model):
     phone = models.CharField(verbose_name=_("Telefonas"), max_length=255)
 
     def __str__(self):
-        return self.user
+        return self.user.get_full_name()
 
 
 class Volunteer(models.Model):

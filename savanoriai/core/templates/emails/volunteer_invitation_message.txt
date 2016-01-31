@@ -1,0 +1,22 @@
+Laba diena,
+
+Jūs gavote kvietimą savanoriauti „Maisto banko“ akcijos, kuri vyks kovo 18-19
+dienomis, metu. Jus kviečia ši organizacija „{{ organisation }}“, kuri
+organizuoja akcijas šiose vietose:
+
+{% for place in organisation.places.all %}
+- {{ place }}
+{% endfor %}
+
+Priėmus kvietimą savanoriauti organizacija gaus Jūsų kontaktinę informaciją bei
+per 24 val. susisieks su Jumis tiesiogiai susitarti dėl laiko, parduotuvės
+adreso ir kitų detalių. Atsisakius kvietimo, Jūsų savanorio profilis grįš į
+bendrą savanorių duomenų bazę. 
+
+Kad priimtumėte kvietimą arba atsisakytumėte kvietimo, sekite šią nuorodą:
+
+{{ confirm_invite_url }}
+
+
+Pagarbiai,
+„Maisto banko“ atstovai

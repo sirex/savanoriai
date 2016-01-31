@@ -3,13 +3,14 @@ from itsdangerous import URLSafeSerializer
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404, JsonResponse
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext
 from django.db import transaction, connection
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf import settings
 
 from allauth.account.forms import ChangePasswordForm
 from allauth.account.decorators import verified_email_required
+from allauth.account.adapter import get_adapter
 
 from savanoriai.core.models import Volunteer, Organisation, VolunteerCampaign
 from savanoriai.core.forms import VolunteerProfileForm, OrganisationProfileForm, VolunteerFilterForm
@@ -133,6 +134,8 @@ def toggle_choice(request):
         cursor = connection.cursor()
         cursor.execute('LOCK TABLE %s' % VolunteerCampaign._meta.db_table)
 
+        created = False
+
         try:
             obj = VolunteerCampaign.objects.get(
                 Q(accepted__isnull=True) | Q(accepted=True),
@@ -144,6 +147,13 @@ def toggle_choice(request):
                 organisation=request.user.organisation,
             )
 
+        if created:
+            serializer = URLSafeSerializer(settings.SECRET_KEY)
+            get_adapter().send_mail('emails/volunteer_invitation', volunteer.user.email, {
+                'organisation': request.user.organisation,
+                'confirm_invite_url': reverse('confirm_invite', args=[serializer.dumps(obj.pk)]),
+            })
+
     state, label = get_volunteer_status(obj, request.user.organisation)
 
     return JsonResponse({
@@ -153,26 +163,22 @@ def toggle_choice(request):
 
 
 def confirm_invite(request, volunteer_campaign_id):
-    serializer = URLSafeSerializer('secret-key')
+    serializer = URLSafeSerializer(settings.SECRET_KEY)
     volunteer_campaign_id = serializer.loads(volunteer_campaign_id)
     volunteer_campaign = get_object_or_404(VolunteerCampaign, pk=volunteer_campaign_id)
 
-    response = log_user_in(volunteer_campaign.volunteer.user)
+    response = log_user_in(request, volunteer_campaign.volunteer.user)
     if response is not None:
         return response
 
     if request.method == 'POST':
-        if request.POST.get('action') == 'confirm':
+        if request.POST.get('action') == 'accept':
             volunteer_campaign.accepted = True
         else:
             volunteer_campaign.accepted = False
         volunteer_campaign.save()
         return redirect('volunteer_profile')
 
-    return render(request, 'organisations/confirm.html', {
-        'message': ugettext(
-            'Ar sutinkate dalyvauti Maisto banko akcijoje, talkinant organizacijai „%s“?'
-        ) % volunteer_campaign.organisation,
-        'accept': ugettext('Sutinku'),
-        'refuse': ugettext('Nesutinku'),
+    return render(request, 'volunteers/confirm.html', {
+        'organisation': volunteer_campaign.organisation,
     })

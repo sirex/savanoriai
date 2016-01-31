@@ -1,0 +1,4 @@
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans %}Kvietimas prisijungti prie akcijos{% endblocktrans %}
+{% endautoescape %}

@@ -329,17 +329,22 @@ def test_toggle_choice(app):
     assert resp.status_int == 200
     assert resp.json == {'label': 'Pakviesta', 'state': 'invited'}
     assert volunteer_campaigns() == [organisation]
+    assert len(mail.outbox) == 1
+    assert mail.outbox[0].subject == '[savanoriai.maistobankas.lt] Kvietimas prisijungti prie akcijos'
+    assert re.search(r'/volunteer/confirm-invite/([^/]+)/', mail.outbox[0].body) is not None
 
     resp = app.post('/volunteers/toggle-choice/', {'volunteer_id': volunteer.pk}, user=user)
     assert resp.status_int == 200
     assert resp.json == {'label': 'Pakviesta', 'state': 'invited'}
     assert volunteer_campaigns() == [organisation]
+    assert len(mail.outbox) == 1
 
     user = other_organisation.user.username
     resp = app.post('/volunteers/toggle-choice/', {'volunteer_id': volunteer.pk}, user=user)
     assert resp.status_int == 200
     assert resp.json == {'label': 'Užimta', 'state': 'taken'}
     assert volunteer_campaigns() == [organisation]
+    assert len(mail.outbox) == 1
 
     vc = VolunteerCampaign.objects.get(campaign=campaign, volunteer=volunteer, organisation=organisation)
     vc.accepted = True
@@ -349,12 +354,14 @@ def test_toggle_choice(app):
     assert resp.status_int == 200
     assert resp.json == {'label': 'Patvirtinta', 'state': 'accepted'}
     assert volunteer_campaigns() == [organisation]
+    assert len(mail.outbox) == 1
 
     user = other_organisation.user.username
     resp = app.post('/volunteers/toggle-choice/', {'volunteer_id': volunteer.pk}, user=user)
     assert resp.status_int == 200
     assert resp.json == {'label': 'Užimta', 'state': 'taken'}
     assert volunteer_campaigns() == [organisation]
+    assert len(mail.outbox) == 1
 
     vc.accepted = False
     vc.save()
@@ -363,3 +370,4 @@ def test_toggle_choice(app):
     assert resp.status_int == 200
     assert resp.json == {'label': 'Atmesta', 'state': 'rejected'}
     assert volunteer_campaigns() == [organisation]
+    assert len(mail.outbox) == 1

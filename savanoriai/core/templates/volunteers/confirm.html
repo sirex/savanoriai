@@ -1,0 +1,38 @@
+{% extends "volunteers/base.html" %}
+
+{% load i18n %}
+
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <h2>{% trans "Kvietimas prisijungti prie akcijos" %}</h2>
+
+    <p>
+    {% blocktrans %}
+    Jūs gavote kvietimą savanoriauti „Maisto banko“ akcijos, kuri vyks kovo 18-19
+    dienomis, metu. Jus kviečia organizacija „{{ organisation }}“, kuri
+    organizuoja akcijas šiose vietose:
+    {% endblocktrans %}
+    </p>
+
+    <ul>
+    {% for place in organisation.places.all %}
+      <li>{{ place }}</li>
+    {% endfor %}
+    </ul>
+
+    <p>{% trans "Ar sutinkate priimti kvietimą?" %}</p>
+
+    <form id="volunteer_profile_form" method="post" action="{% url 'volunteer_profile' %}">
+      {% csrf_token %}
+      <div class="form-actions">
+        <button class="btn btn-success" name="action" value="accept" type="submit">{% trans "Sutinku" %}</button>
+        <button class="btn btn-danger" name="action" value="refuse" type="submit">{% trans "Nesutinku" %}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
