@@ -171,6 +171,7 @@ def test_volunteer_change_password(app):
 
 
 def test_organisation(app):
+    factories.CampaignFactory()
     place = factories.PlaceFactory()
 
     # Open login form
@@ -220,7 +221,7 @@ def test_organisation(app):
 
     # Check redirect
     resp = resp.follow()
-    assert resp.request.path == '/organisation/profile/'
+    assert resp.request.path == '/volunteers/'
 
 
 def test_organisation_profile(app):
@@ -249,6 +250,7 @@ def test_organisation_profile(app):
 
 
 def test_organisation_change_email(app):
+    factories.CampaignFactory()
     organisation = factories.OrganisationFactory()
 
     resp = app.get('/organisation/profile/', user=organisation.user.username)
@@ -269,9 +271,10 @@ def test_organisation_change_email(app):
     resp = app.get(confirmation_url)
     resp = resp.form.submit()
     resp = resp.follow()
-    assert resp.request.path == '/organisation/profile/'
+    assert resp.request.path == '/volunteers/'
 
     # Change to confirmed email
+    resp = app.get('/organisation/profile/', user=organisation.user.username)
     form = resp.forms['organisation_profile_form']
     form['email'] = 'new@example.com'
     resp = form.submit('action', value='update_profile')
