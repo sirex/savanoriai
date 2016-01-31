@@ -71,9 +71,22 @@ class Volunteer(models.Model):
 
 
 class VolunteerCampaign(models.Model):
+    """
+
+    Properties:
+
+        accepted (bool or None):
+            None - Invitation was sent, but volunteer did not responded
+            True - Volunteer accpeted inviation
+            False - Volunteer refused inviation
+
+    """
     volunteer = models.ForeignKey(Volunteer, verbose_name=_("Savanoris"))
     campaign = models.ForeignKey(Campaign, verbose_name=_("Akcija"))
     organisation = models.ForeignKey(Organisation, verbose_name=_("Organizacija"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Užsiregistravo"))
     accepted = models.NullBooleanField(verbose_name=_("Priimta"))
     removed = models.BooleanField(verbose_name=_("Pašalinta organizacijos"), default=False)
+
+    class Meta:
+        unique_together = ('volunteer', 'campaign', 'organisation')

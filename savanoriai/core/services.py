@@ -26,7 +26,7 @@ def log_user_in(request, user):
                 logged_in = True
 
         user_logged_in.connect(check_logged_in)
-        response = perform_login(request, user, email_verification=settings.EMAIL_VERIFICATION)
+        response = perform_login(request, user, email_verification=settings.ACCOUNT_EMAIL_VERIFICATION)
         user_logged_in.disconnect(check_logged_in)
 
         if logged_in is False:

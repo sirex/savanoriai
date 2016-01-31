@@ -2,11 +2,10 @@
 
 {% load i18n %}
 {% load bootstrap from bootstrap %}
+{% load volunteer_state from savanoriaitags %}
 
 
 {% block content %}
-
-{% url 'toggle_choice' as toggle_choice_url %}
 
 <div class="row">
   <div class="col-md-9">
@@ -38,9 +37,7 @@
           </td>
           <td class="numeric">{{ volunteer.experience|default_if_none:'-' }}</td>
           <td class="table-row-actions">
-            <a href="#" class="btn btn-default btn-sm" onclick="savanoriai.toggle_choice(this, '{{ toggle_choice_url }}', {{ volunteer.pk }});">
-              {% trans 'Pasirinkti' %}
-            </a>
+            {% volunteer_state requirements.user.organisation volunteer %}
           </td>
         </tr>
         {% endfor %}

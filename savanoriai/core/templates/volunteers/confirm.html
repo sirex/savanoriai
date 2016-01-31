@@ -25,7 +25,7 @@
 
     <p>{% trans "Ar sutinkate priimti kvietimą?" %}</p>
 
-    <form id="volunteer_profile_form" method="post" action="{% url 'volunteer_profile' %}">
+    <form id="volunteer_profile_form" method="post" action="">
       {% csrf_token %}
       <div class="form-actions">
         <button class="btn btn-success" name="action" value="accept" type="submit">{% trans "Sutinku" %}</button>

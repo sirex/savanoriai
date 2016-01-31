@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404, JsonResponse
 from django.core.urlresolvers import reverse
 from django.db import transaction, connection
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 
@@ -87,6 +87,7 @@ def volunteer_profile(request):
 
 @verified_email_required()
 def volunteers_list(request):
+    campaign = get_active_campaign_or_404()
     filter_form = VolunteerFilterForm(request.GET)
 
     qs = Volunteer.objects.all()
@@ -104,7 +105,18 @@ def volunteers_list(request):
         qs.
         distinct().
         select_related('user').
-        prefetch_related('shift', 'places').
+        prefetch_related(
+            'shift', 'places',
+            Prefetch('campaigns', to_attr='taken', queryset=(
+                VolunteerCampaign.objects.
+                exclude(organisation=request.user.organisation).
+                filter(campaign=campaign, accepted=True)
+            )),
+            Prefetch('campaigns', to_attr='state', queryset=(
+                VolunteerCampaign.objects.
+                filter(campaign=campaign, organisation=request.user.organisation)
+            )),
+        ).
         order_by('user__first_name', 'user__last_name', 'id')
     )
 
@@ -149,9 +161,10 @@ def toggle_choice(request):
 
         if created:
             serializer = URLSafeSerializer(settings.SECRET_KEY)
+            confirm_invite_url = reverse('confirm_invite', args=[serializer.dumps(obj.pk)])
             get_adapter().send_mail('emails/volunteer_invitation', volunteer.user.email, {
                 'organisation': request.user.organisation,
-                'confirm_invite_url': reverse('confirm_invite', args=[serializer.dumps(obj.pk)]),
+                'confirm_invite_url': request.build_absolute_uri(confirm_invite_url),
             })
 
     state, label = get_volunteer_status(obj, request.user.organisation)
@@ -166,6 +179,9 @@ def confirm_invite(request, volunteer_campaign_id):
     serializer = URLSafeSerializer(settings.SECRET_KEY)
     volunteer_campaign_id = serializer.loads(volunteer_campaign_id)
     volunteer_campaign = get_object_or_404(VolunteerCampaign, pk=volunteer_campaign_id)
+
+    if request.user.is_authenticated() and volunteer_campaign.volunteer != request.user.volunteer:
+        raise Http404('Invitation was sent to other volunteer.')
 
     response = log_user_in(request, volunteer_campaign.volunteer.user)
     if response is not None:
