@@ -144,7 +144,7 @@ class VolunteerBaseForm(forms.Form):
         ]
         help_texts = {
             'places': _("Mikrorajonai, gyvenvietės arba miestai, kuriuose norėtumėte savanoriauti."),
-            'experience': _("Nurodykite, kiek kartų jau esate savanoriavę."),
+            'experience': _("Nurodykite, kiek kartų jau esate savanoriavę „Maisto banko“ akcijoje."),
         }
         widgets = {
             'shift': forms.CheckboxSelectMultiple(),
