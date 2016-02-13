@@ -36,6 +36,8 @@ def validate_profile_email(form, value):
 class OrganisationBaseForm(forms.Form):
     first_name = User._meta.get_field('first_name').formfield()
 
+    required_css_class = 'field-required'
+
     class Meta:
         model = Organisation
         autocomplete_fields = ('places',)
@@ -125,6 +127,8 @@ class OrgSignupForm(SignupForm, OrganisationBaseForm, al.ModelForm):
 class VolunteerBaseForm(forms.Form):
     first_name = User._meta.get_field('first_name').formfield()
     last_name = User._meta.get_field('last_name').formfield()
+
+    required_css_class = 'field-required'
 
     class Meta:
         model = Volunteer

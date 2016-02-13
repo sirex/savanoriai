@@ -32,3 +32,7 @@
 .table-row-actions {
     text-align: right;
 }
+
+.field-required:after {
+    content: "*";
+}
