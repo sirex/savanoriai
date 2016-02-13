@@ -1,26 +1,10 @@
 import re
-import pytest
 
 from django.core import mail
 
-from django_webtest import DjangoTestApp, WebTestMixin
-
 from savanoriai.core import factories
 from savanoriai.core.models import Volunteer, Organisation, VolunteerCampaign
-
-
-@pytest.fixture
-def app(request, db):
-    mixin = WebTestMixin()
-    mixin._patch_settings()
-    mixin._disable_csrf_checks()
-    request.addfinalizer(mixin._unpatch_settings)
-    return DjangoTestApp(extra_environ=mixin.extra_environ)
-
-
-def errors(resp):
-    if 'form' in resp.context:
-        return resp.context['form'].errors
+from savanoriai.core.tests.utils import errors
 
 
 def test_volunteer(app):
