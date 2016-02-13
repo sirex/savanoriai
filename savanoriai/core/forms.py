@@ -99,6 +99,10 @@ class OrganisationProfileForm(OrganisationBaseForm, al.ModelForm):
         return validate_profile_email(self, value)
 
 
+class OrganisationAdminForm(OrganisationBaseForm, al.ModelForm):
+    email = forms.EmailField(label=_("El. pašto adresas"), widget=forms.TextInput(attrs={'type': 'email'}))
+
+
 class OrgSignupForm(SignupForm, OrganisationBaseForm, al.ModelForm):
     agreement = forms.BooleanField(initial=False, label=agreement_text)
 

@@ -77,6 +77,21 @@ class UserFactory(DjangoModelFactory):
         django_get_or_create = ('username',)
 
 
+class AdminUserFactory(DjangoModelFactory):
+    first_name = 'Vardenis'
+    last_name = 'Pavardenis'
+    username = 'admin'
+    email = factory.LazyAttribute(lambda x: '%s@example.com' % x.username)
+    is_active = True
+    is_staff = True
+    is_superuser = True
+    emailaddress = factory.RelatedFactory(EmailAddressFactory, 'user')
+
+    class Meta:
+        model = settings.AUTH_USER_MODEL
+        django_get_or_create = ('username',)
+
+
 class OrganisationFactory(DjangoModelFactory):
     user = factory.SubFactory(
         UserFactory,
