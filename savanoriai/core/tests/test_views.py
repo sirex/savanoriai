@@ -31,6 +31,8 @@ def test_volunteer(app):
     assert resp.status_int == 302, errors(resp)
     assert len(mail.outbox) == 1
     assert mail.outbox[0].subject == '[savanoriai.maistobankas.lt] Prašome patvirtinti savo el. pašto adresą'
+    assert 'savanorio profilį' in mail.outbox[0].body
+    assert 'organizacijos profilį' not in mail.outbox[0].body
 
     # Check if user was created
     volunteer = Volunteer.objects.get(user__email='test@example.com')
@@ -177,6 +179,8 @@ def test_organisation(app):
     assert resp.status_int == 302, errors(resp)
     assert len(mail.outbox) == 1
     assert mail.outbox[0].subject == '[savanoriai.maistobankas.lt] Prašome patvirtinti savo el. pašto adresą'
+    assert 'organizacijos profilį' in mail.outbox[0].body
+    assert 'savanorio profilį' not in mail.outbox[0].body
 
     # Check if user was created
     volunteer = Organisation.objects.get(user__email='test@example.com')

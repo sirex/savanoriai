@@ -1,0 +1,17 @@
+Laba diena,
+
+labai džiaugiamės, kad užsiregistravote „Maisto banko“ akcijos organizacijų ir
+savanorių sistemoje. Kad užbaigtumėte savo registraciją, Jums reikėtų aktyvuoti
+savo organizacijos profilį. Tą padaryti galite paspaudę ant šitos nuorodos:
+
+{{ activate_url }}
+
+Aktyvavus organizacijos profilį, turėsite galimybę prisijungti prie savanorių
+duomenų bazės ir pasirinkti Jums tinkamus savanorius iš sąrašo. Pasirinkus
+savanorius galėsite juos pakviesti padėti Jūsų organizacijai savanoriaujant
+„Maisto banko“ akcijos metu.
+
+Jeigu kyla klausimų, kreipkitės tadas@maistobankas.lt
+
+Pagarbiai,
+„Maisto banko“ atstovai
