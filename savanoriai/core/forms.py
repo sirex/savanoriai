@@ -187,6 +187,10 @@ class VolunteerBaseForm(forms.Form):
             email_address.set_as_primary()
 
 
+class VolunteerAdminForm(VolunteerBaseForm, al.ModelForm):
+    email = forms.EmailField(label=_("El. pašto adresas"), widget=forms.TextInput(attrs={'type': 'email'}))
+
+
 class VolunteerProfileForm(VolunteerBaseForm, al.ModelForm):
     email = forms.EmailField(widget=forms.TextInput(attrs={'type': 'email'}))
 

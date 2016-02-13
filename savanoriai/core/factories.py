@@ -47,7 +47,7 @@ shifts = [
 
 
 class ShiftFactory(DjangoModelFactory):
-    title = factory.Iterator(shifts, cycle=False)
+    title = factory.Iterator(shifts, cycle=True)
     visible = True
 
     class Meta:
