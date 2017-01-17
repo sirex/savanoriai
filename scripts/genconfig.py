@@ -37,7 +37,7 @@ def main():
         config.read(args.config)
 
     update_config(config, (
-        ('buildout',  (
+        ('buildout', (
             ('extends', args.extends),
         )),
         ('settings', (
@@ -47,6 +47,10 @@ def main():
 
     with open(args.config, 'w') as f:
         config.write(f)
+
+    if not os.path.exists('.env'):
+        with open('.env', 'w') as f:
+            f.write('SECRET_KEY=%s\n' % config['settings']['secret_key'])
 
 
 if __name__ == '__main__':
